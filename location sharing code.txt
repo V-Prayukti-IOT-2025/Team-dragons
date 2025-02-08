@@ -1,0 +1,136 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+
+ext {
+    versionNumber = computeVersionNumber()
+    versionName = rootProject.version
+    keystorePath = properties.keystorePath
+    storePassword = properties.storePassword
+    keyAlias = properties.keyAlias
+    keyPassword = properties.keyPassword
+    println "HyperTrack Live version is " + versionName
+}
+
+configurations.all {
+    resolutionStrategy.cacheDynamicVersionsFor 0, "seconds"
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+    compileSdkVersion 33
+    defaultConfig {
+        applicationId "com.hypertrack.live"
+        minSdkVersion 19
+        targetSdkVersion 30
+        minSdkVersion 23
+        targetSdkVersion 33
+        versionCode project.ext.versionNumber
+        versionName project.ext.versionName
+        testInstrumentationRunner
+        multiDexEnabled true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    signingConfigs {
+
+        if (project.ext.keystorePath != null) {
+@@ -91,7 +95,7 @@
+
+    implementation 'com.amazonaws:aws-android-sdk-mobile-client:2.16.7'
+
+    implementation 'com.hypertrack:hypertrack:4.9.0'
+    implementation 'com.hypertrack:hypertrack:6.4.0'
+    implementation 'com.hypertrack:hypertrack-views:0.8.6'
+    implementation 'com.hypertrack:maps-google:0.1.8'
+    implementation project(':hypertrack-backend')
+@@ -122,4 +126,4 @@
+        return versionMajor * 1000000 + versionMinor * 10000 + versionPatch
+    }
+    throw new Exception("Could not read version.properties!")
+}
+}
+‎app/src/main/java/com/hypertrack/live/App.java
++1
+-1
+Original file line number	Diff line number	Diff line change
+@@ -29,7 +29,7 @@ public void onCreate() {
+
+        HyperTrack.enableDebugLogging();
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), "AIzaSyBKZejrZNZpLlemrH28Nc46XzHsRSVRxKI");
+            Places.initialize(getApplicationContext(), "AIzaSyDlJnfZX9OsayqA3EtVtUI-yGa-OBRoseU");
+        }
+
+        SharedHelper sharedHelper = SharedHelper.getInstance(this);
+‎hypertrack-backend/build.gradle
++8
+-5
+Original file line number	Diff line number	Diff line change
+@@ -3,57 +3,60 @@
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+    compileSdkVersion 33
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 29
+        minSdkVersion 23
+        targetSdkVersion 33
+        versionCode 1
+        versionName rootProject.version
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources true
+        }
+    }
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+
+    api 'androidx.appcompat:appcompat:1.1.0'
+    api 'com.google.code.gson:gson:2.8.6'
+    api 'com.android.volley:volley:1.1.1'
+
+    implementation "androidx.core:core-ktx:1.3.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
+
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.2.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.6.3'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.3'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.6.3'
+
+    testImplementation 'junit:junit:4.13'
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'com.amazonaws:aws-android-sdk-mobile-client:2.16.7'
+    androidTestImplementation("com.squareup.okhttp3:mockwebserver:3.12.9")
+
+}
